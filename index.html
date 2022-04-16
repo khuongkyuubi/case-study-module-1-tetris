@@ -11,10 +11,21 @@
 <h1>Game Tetris</h1>
 <div class="game">
     <div class="score-box">
-        Score: <div id="score">0</div>
+        <button onclick="sound()" class="button">sound</button>
+        <br>
+        Score:
+        <div id="score">0</div>
+
     </div>
     <canvas id="canvas"></canvas>
 </div>
+
+<!--<audio controls autoplay loop>-->
+<!--    <source src="sound/theme-sound.mp3" type="audio/mpeg">-->
+<!--</audio>-->
 </body>
+<script src="js/Sounds.js"></script>
+<script src="js/Shape.js"></script>
+<script src="js/Pieces.js"></script>
 <script src="js/Main.js"></script>
 </html>
