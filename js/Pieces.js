@@ -93,7 +93,7 @@ class Pieces {
 
 
     moveSound(){
-        let move = new Sounds("./sound/move.mp3");
+
         move.sound.autoplay = false;
         // clear.play();
         return move;
@@ -138,9 +138,8 @@ class Pieces {
                     // so sánh vị trí hiện tạo với cạnh trên
                     if (this.y + i < 0) {
                         gameOver = true;
-                        let lose = new Sounds("./sound/game-over.mp3");
-                        lose.play();
                         tetris.stop();
+                        lose.play();
                         break;
 
                     } else {
@@ -161,9 +160,7 @@ class Pieces {
             // nếu các hàng đều có màu
             // Đẩy các hàng ở trên hàng đấy xuống là xong (lúc này hàng trên sẽ bị trống), phải tạo 1 hàng mới cáu màu trắng ở trên đỉnh của gam board
             if (isFull) {
-                clearInterval(interval);
-                let clear = new Sounds("./sound/clear.mp3");
-                clear.sound.autoplay = false;
+                clearInterval(interval2);
                 clear.play();
                 for (let y = i; y > 1; y--) {
                     for (let j = 0; j < cols; j++) {
@@ -188,7 +185,7 @@ class Pieces {
     // Xoay hình
     rotate() {
         // lấy ra hình kế tiếp để test
-        let rotate = new Sounds("./sound/rotate.mp3");
+
         rotate.play();
 
         let nextIndex = (this.testrominoN + 1) % this.testromino.length;
@@ -231,8 +228,6 @@ class Pieces {
         // x giá trị dịch chuyển theo chiều x (bước dịch chuyển)
         // y giá trị dịch chuyển theo chiều y (bước dịch chuyển)
         // piece chính là hình (mảng hình )
-        let bounce = new Sounds("./sound/bounce.mp3");
-        bounce.sound.autoplay = false;
 
         for (let i = 0; i < piece.length; i++) {
             for (let j = 0; j < piece.length; j++) {
@@ -247,7 +242,7 @@ class Pieces {
                     return true;
                 }
                 if( newY >= rows) {
-                    clearInterval(interval);
+                    clearInterval(interval2);
                     bounce.play();
                     return true;
                 }
@@ -259,7 +254,7 @@ class Pieces {
                 // xử lý khi va chạm với hình khác
                 if (board[newY][newX] !== COLOR) {
                     bounce.play();
-                    clearInterval(interval);
+                    clearInterval(interval2);
                     // nếu trong bảng có màu khác màu nền (color), có nghĩa là có hình, tính là va chạm
                     return true
                 }

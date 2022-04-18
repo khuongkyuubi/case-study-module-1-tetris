@@ -11,11 +11,15 @@ class Sounds {
     }
 
     play(){
-        this.sound.play();
+        if (!mute) {
+            this.sound.play();
+        }
     }
 
     stop(){
-        this.sound.pause();
+        if(!mute){
+            this.sound.pause();
+        }
     }
 
 

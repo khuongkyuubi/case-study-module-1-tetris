@@ -6,38 +6,45 @@ body {
     background-image: url("/images/background.jpg");
     background-size: cover;
     color: cornsilk;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+#logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
 }
 
 h1 {
     text-align: center;
+    margin-bottom: 10px;
+    font-size: 2.5em;
 
 }
 .game {
     text-align: right;
-    /*width: 300;*/
-    /*margin: auto;*/
-}
 
+}
 
 #canvas {
 
-    /*border: 1px solid black;*/
 }
-#score {
+.score {
     display: inline-block;
+    color: coral;
 }
 
 
 /*CSS cho button play nhạc*/
 .button {
     border-radius: 4px;
-    background-color: #4CAF50; /* Green */
     border: none;
     color: white;
     /*padding: 16px 32px;*/
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    /*display: inline-block;*/
     font-size: 16px;
     margin: 4px 2px;
     transition-duration: 0.4s;
@@ -45,8 +52,9 @@ h1 {
 }
 
 .button {
-    background-color: white;
-    color: black;
+    width: 75px;
+    background-color: #0b3378;
+    color: wheat;
     border: 2px solid #4CAF50;
 }
 
