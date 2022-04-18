@@ -62,11 +62,6 @@ class Pieces {
 
     draw() {
         this.fill(this.color);
-        // console.log(this.testrominoN);
-        // console.log(this.activeTestromino);
-        // console.log("y hien tai " + this.y);
-
-
     }
 
     unDraw() {
@@ -74,7 +69,7 @@ class Pieces {
     }
 
     moveDown() {
-        // va chạm thì di chuyển
+        //Nếu di chuyển thêm 1 bước mà không va chạm thì di chuyển, tăng y
         if (!this.collision(0, 1, this.activeTestromino)) {
             this.unDraw();
             this.y++;
@@ -82,7 +77,7 @@ class Pieces {
             this.draw();
             // console.log("this index" + this.testrominoN)
         }
-        // không va chạm thì khóa chuyển động
+        // Nếu va chạm thì khóa chuyển động
         else {
             // sau khi khóa chuyển động thì tạo ra 1 hình mới
             this.stopMove();
@@ -93,9 +88,6 @@ class Pieces {
 
 
     moveSound(){
-
-        move.sound.autoplay = false;
-        // clear.play();
         return move;
     }
 
@@ -130,12 +122,14 @@ class Pieces {
     }
 
     stopMove() {
+        // stopMove chỉ được gọi khi check moveDown có va chạm
         for (let i = 0; i < this.activeTestromino.length; i++) {
             for (let j = 0; j < this.activeTestromino.length; j++) {
                 // trường hợp phần tử có giá trị (tức == 1) thí mới vẽ
                 // nếu ô được duyệt không có dữ liệu thì bỏ qua
                 if (this.activeTestromino[i][j]) {
-                    // so sánh vị trí hiện tạo với cạnh trên
+                    // so sánh vị trí hiện tại với cạnh trên
+                    // Chỉ cần 1 hình nằm ở trên board là game over
                     if (this.y + i < 0) {
                         gameOver = true;
                         tetris.stop();
@@ -143,14 +137,18 @@ class Pieces {
                         break;
 
                     } else {
-                        board[this.y + i][this.x + j] = this.color;
+                        // check va chạm cạnh trên, nếu vẫn không va chạm thì khóa chuyển động
+                        // vì hàm stopMove() chỉ được gọi khi check moveDown có va chạm
+                        board[this.y + i][this.x + j] = this.color; // khóa chuyển động
+                        // Thực chất là vẽ lại chính hình đấy, ở vị trí mà nó va chạm
+                        // Và không gọi moveDown cho nó nữa
 
                     }
                 }
             }
         }
-        // Tính điểm cho game
 
+        // Tính điểm cho game
         for (let i = 0; i < rows; i++) {
             let isFull = true;
             for (let j = 0; j < cols; j++) {
@@ -228,15 +226,16 @@ class Pieces {
         // x giá trị dịch chuyển theo chiều x (bước dịch chuyển)
         // y giá trị dịch chuyển theo chiều y (bước dịch chuyển)
         // piece chính là hình (mảng hình )
-
+        let newX;
+        let newY;
         for (let i = 0; i < piece.length; i++) {
             for (let j = 0; j < piece.length; j++) {
                 if (!piece[i][j]) {
                     // bỏ qua nếu vị trí đó k có giá trị
                     continue;
                 }
-                let newX = this.x + j + x; // tọa độ X của 1 ô (có màu)
-                let newY = this.y + i + y; // Tọa độ Y mới của 1 ô (có màu)
+                /*let */newX = this.x + j + x; // tọa độ X của 1 ô (có màu)
+                /*let */newY = this.y + i + y; // Tọa độ Y mới của 1 ô (có màu)
 
                 if (newX < 0 || newX >= cols /*|| newY >= rows*/) {
                     return true;
@@ -248,6 +247,7 @@ class Pieces {
                 }
 
                 if (newY < 0) {
+                    // lúc đầu newY luôn < 0 nên cần bỏ qua k xét
                     continue;
                 }
 
@@ -261,8 +261,10 @@ class Pieces {
             }
         }
         // không vi phạm các trường hợp trên có nghĩa là chưa v chạm
+        // console.log(newY);
         return false;
 
     }
+
 
 }

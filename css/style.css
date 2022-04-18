@@ -7,6 +7,7 @@ body {
     background-size: cover;
     color: cornsilk;
     font-family: "Lucida Console", "Courier New", monospace;
+    position: relative;
 }
 
 #logo {
@@ -22,14 +23,26 @@ h1 {
     font-size: 2.5em;
 
 }
+
 .game {
     text-align: right;
+    /*display: inline-block;*/
+    /*float: left;*/
 
 }
 
 #canvas {
 
+
 }
+
+#canvas2 {
+    background-color: chocolate;
+    position: relative;
+    top: 10px;
+    /*float: left;*/
+}
+
 .score {
     display: inline-block;
     color: coral;
@@ -37,8 +50,16 @@ h1 {
 
 
 /*CSS cho button play nhạc*/
+.button-list {
+    /*margin: 0 auto;*/
+    /*width: 275px;*/
+    /*box-sizing: border-box;*/
+
+
+}
+
 .button {
-    border-radius: 4px;
+    border-radius: 15px;
     border: none;
     color: white;
     /*padding: 16px 32px;*/

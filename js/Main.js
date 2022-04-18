@@ -2,7 +2,6 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let game = document.querySelector(".game");
 
-
 let cellSize = 30; // 30x30
 let rows = 20;
 let cols = 10;
@@ -18,8 +17,7 @@ let score = 0;
 let cW = canvas.width = cellSize * cols; // 300
 let cH = canvas.height = cellSize * rows; // 600
 game.style = `width: ${cW}px; margin: auto`;
-
-
+// Tạo mảng chứa các dạng hình
 let pieces = [
     [Z, "red"],
     [S, "green"],
@@ -59,19 +57,27 @@ function drawCell(x, y, color) {
 
 }
 
+
+
+
 // Tạo mảng 2 chiều chứa gameboard có kích thước rows x cols
 // gán màu mặc định (white) cho từng ô
 
 let board = new Array(rows);
+let p = {};
 
 function newGame() {
     for (let i = 0; i < rows; i++) {
-        board[i] = new Array(cols);
+        if (!board[i]) {
+            board[i] = new Array(cols);// nếu tồn tại các mảng con của board rồi thì bỏ qua, ng
+        }
         for (let j = 0; j < cols; j++) {
             board[i][j] = COLOR;
         }
     }
+    p = randomPiece();
     score = 0;
+    document.getElementById("score").innerText = score;
 }
 
 newGame();
@@ -95,18 +101,21 @@ function randomPiece() {
 
 }
 
-let p = randomPiece();
+
+
 
 // hàm thả rơi
 function drop() {
     interval = setInterval(function () {
-        console.log(gameOver);
+        checkGameOver();
+        // console.log(gameOver);
         if (!gameOver) {
             p.moveDown();
-            checkGameOver();
+            // checkGameOver();
 
         } else {
             clearInterval(interval);
+            // makeCover();
         }
 
     }, 500)
@@ -153,7 +162,7 @@ function gameControl(evt) {
         }
     }
     if (evt.type === "keypress") {
-        console.log(evt)
+        // console.log(evt)
         switch (evt.key) {
             case " ":
                 clearInterval(interval2);
@@ -180,32 +189,16 @@ function mouseControl(evt) {
             for (let i = 0; i < cols; i++) {
                 if (evt.offsetX <= (i + 1) * cellSize && evt.offsetX >= i * cellSize) {
                     p.moveFollowMouse(i);
-                    console.log(i)
+                    // console.log(i)
+                    // console.log(gameOver)
                 }
             }
             break;
 
     }
-    /* if (evt.type === "click") {
-         p.rotate();
-     }
-     if (evt.type === "contextmenu") {
-         evt.preventDefault();
-         p.moveDown();
-     }
-     if (evt.type === "mousemove") {
-         // console.log(evt.offsetX);
-         for (let i = 0; i < cols; i++) {
-             if (evt.offsetX <= (i + 1) * cellSize && evt.offsetX >= i * cellSize) {
-                 p.moveFollowMouse(i);
-                 console.log(i)
-             }
-         }
-     }*/
 
 }
 
-// console.log(playing);
 
 
 addControl();
@@ -223,27 +216,38 @@ function addControl() {
 
 
 function removeControl() {
+    window.removeEventListener("keydown", gameControl);
+    window.removeEventListener("keyup", gameControl);
+    window.removeEventListener("keypress", gameControl);
     canvas.removeEventListener("mousemove", mouseControl);
     canvas.removeEventListener("click", mouseControl);
-    window.removeEventListener("keydown", gameControl);
     canvas.removeEventListener("contextmenu", mouseControl);
 }
 
 function checkGameOver() {
     if (gameOver) {
+        clearInterval(interval);
+        clearInterval(interval2);
         removeControl();
         playing = false;
-        // alert("Game over");
         playBtn.hidden = true;
         pauseBtn.hidden = true;
+        soundBtn.hidden = true;
+        muteBtn.hidden = true;
         newBtn.hidden = false;
         console.log("Game over");
+        makeCover();
     }
 }
 
 playBtn.onclick = () => {
+    // p.unDraw();
+    drawBoard();
+    p.draw();
+    addControl();
     if (playBtn.innerText !== "Play") {
         playBtn.innerText = "Play";
+        muteBtn.hidden = false;
     }
     drop();
     sound(this);
@@ -252,11 +256,20 @@ playBtn.onclick = () => {
     }
     playBtn.hidden = true;
     newBtn.hidden = false;
-    // document.getElementById("pause").hidden = true;
     pauseBtn.hidden = false;
+
+    if (audios[0].paused) {
+        soundBtn.hidden = false;
+
+    } else {
+        muteBtn.hidden = false;
+    }
+
 };
 
 pauseBtn.onclick = () => {
+    // console.log(p.x);
+    makeCover();
     clearInterval(interval);
     removeControl();
     tetris.stop();
@@ -264,21 +277,36 @@ pauseBtn.onclick = () => {
 
     pauseBtn.hidden = true; // arrow function không có bind, nên không dùng được this
     playBtn.hidden = false;
+    muteBtn.hidden = true;
+    soundBtn.hidden = true;
 
 };
 
 newBtn.onclick = () => {
-    clearInterval(interval);
+    removeControl();
+    clearInterval(interval); // xóa interval để tránh duplicate gọi drop()
     clearInterval(interval2);
     newGame();
     drawBoard();
     gameOver = false;
     playing = true;
+    mute = false;
+    // restart audio at new game
+    tetris.sound.pause();
+    tetris.sound.currentTime = 0;
     addControl();
     drop();
     sound(this);
-    newBtn.hidden = true; // arrow function không có bind, nên không dùng được this
+    // newBtn.hidden = true; // arrow function không có bind, nên không dùng được this
     pauseBtn.hidden = false;
+    playBtn.hidden = true;
+    muteBtn.hidden = false;
+    soundBtn.hidden = true;
+    // console.log("sound hidden:  "+muteBtn.hidden);
+    // tetris.play();
+
+
+
 
 };
 
@@ -288,7 +316,6 @@ function sound(element) {
     if (gameOver) {
         return;
     }
-    console.log(element.id);
     switch (element.id) {
         case "mute":
             mute = true;
@@ -297,22 +324,40 @@ function sound(element) {
             }
             // tetris.stop();
             element.hidden = true;
-            document.getElementById("sound-on").hidden = false;
+            soundBtn.hidden = false;
             break;
         case "sound-on":
             mute = false;
             element.hidden = true;
+            muteBtn.hidden = false;
 
         default:
             tetris.play();
-            document.getElementById("mute").hidden = false;
+            // document.getElementById("mute").hidden = false;
             tetris.sound.loop = true;
         // console.log(playing);
     }
 
 }
 
+function makeCover() {
+    // tạo lớp mờ
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.rect(0, 0, cW, cH);
+    ctx.fill();
+    ctx.font = "30px Verdana";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    // vẽ chữ trên lớp mờ đấy
+    if (gameOver) {
+        ctx.fillText("GAME OVER", cW / 2, cH / 2);
+        // console.log("Why")
+    } else {
+        ctx.fillText("PAUSE", cW / 2, cH / 2);
+    }
 
+
+}
 
 
 
