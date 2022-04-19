@@ -9,6 +9,7 @@ const COLOR = "white";
 let lineColor = "#ccc";
 let gameOver = false;
 let playing = false;
+let paused = false;
 let mute = false;
 let interval; // for start game
 let interval2; // for move fast when press ArrowDown
@@ -45,6 +46,7 @@ let playBtn = document.getElementById("play");
 let pauseBtn = document.getElementById("pause");
 let muteBtn = document.getElementById("mute");
 let soundBtn = document.getElementById("sound-on");
+let guideBtn = document.getElementById("guide");
 
 function drawCell(x, y, color) {
     // Vẽ 2 hình chữ nhật đè lên nhau, 1 hình màu, 1 hình viền
@@ -80,12 +82,17 @@ newGame();
 
 // Vẽ game-board
 function drawBoard() {
+    if (gameOver) {
+        return;
+    }
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             drawCell(j, i, board[i][j]);
         }
     }
+    console.log("Vẫn DrawBoard")
 }
+
 drawBoard();
 
 
@@ -95,8 +102,6 @@ function randomPiece() {
     return new Pieces(pieces[r][0], pieces[r][1]);
 
 }
-
-
 
 
 // hàm thả rơi
@@ -181,13 +186,7 @@ function mouseControl(evt) {
             p.moveDown();
             break;
         case "mousemove":
-            for (let i = 0; i < cols; i++) {
-                if (evt.offsetX <= (i + 1) * cellSize && evt.offsetX >= i * cellSize) {
-                    p.moveFollowMouse(i);
-                    // console.log(i)
-                    // console.log(gameOver)
-                }
-            }
+            evt.preventDefault();
             break;
 
     }
@@ -224,9 +223,12 @@ function checkGameOver() {
         soundBtn.hidden = true;
         muteBtn.hidden = true;
         newBtn.hidden = false;
+        guideBtn.hidden = false;
         console.log("Game over");
         makeCover();
-    }
+    } /*else {
+        guideBtn.hidden = true;
+    }*/
 }
 
 playBtn.onclick = () => {
@@ -240,12 +242,16 @@ playBtn.onclick = () => {
     }
     drop();
     sound(this);
+    paused = false;
     if (!playing) {
         playing = true;
     }
     playBtn.hidden = true;
     newBtn.hidden = false;
+    guideBtn.hidden = true;
     pauseBtn.hidden = false;
+    guideBtn.ariaPressed = "false";
+    guideBtn.hidden = true;
 
     if (audios[0].paused) {
         soundBtn.hidden = false;
@@ -258,48 +264,80 @@ playBtn.onclick = () => {
 
 pauseBtn.onclick = () => {
     // console.log(p.x);
+    playing = false;
+    paused = true;
     makeCover();
     clearInterval(interval);
     removeControl();
     tetris.stop();
-    // playing = true;
 
     pauseBtn.hidden = true; // arrow function không có bind, nên không dùng được this
     playBtn.hidden = false;
     muteBtn.hidden = true;
     soundBtn.hidden = true;
+    guideBtn.hidden = false;
 
 };
 
 newBtn.onclick = () => {
+    gameOver = false;
+    playing = true;
+    // mute = false;
     removeControl();
     clearInterval(interval); // xóa interval để tránh duplicate gọi drop()
     clearInterval(interval2);
     newGame();
     drawBoard();
-    gameOver = false;
-    playing = true;
-    mute = false;
-    // restart audio at new game
-    tetris.sound.pause();
-    tetris.sound.currentTime = 0;
     addControl();
     drop();
-    sound(this);
+    sound(this); // play nhạc nền khi ấn new
+    if (audios[0].paused) {
+        soundBtn.hidden = false;
+
+    } else {
+        tetris.sound.pause();
+        tetris.sound.currentTime = 0;
+        sound(this); // play lại nhạc sau khi pause() ở trên
+        muteBtn.hidden = false;
+    }
     // newBtn.hidden = true; // arrow function không có bind, nên không dùng được this
     pauseBtn.hidden = false;
     playBtn.hidden = true;
-    muteBtn.hidden = false;
-    soundBtn.hidden = true;
+    // muteBtn.hidden = false;
+    // soundBtn.hidden = true;
+    guideBtn.hidden = true;
+    guideBtn.ariaPressed = "false";
     // console.log("sound hidden:  "+muteBtn.hidden);
     // tetris.play();
-
-
-
-
 };
 
-// document.getElementById("play").addEventListener("click", sound);
+guideBtn.onclick = () => {
+    console.log(guideBtn.ariaPressed)
+
+    if (guideBtn.ariaPressed === "true") {
+        if (gameOver) {
+            gameOver = false;
+            drawBoard();
+            gameOver = true;
+        } else {
+            drawBoard();
+        }
+        p.draw();
+        makeCover();
+        guideBtn.ariaPressed = "false";
+    } else {
+        if (gameOver) {
+            gameOver = false;
+            drawBoard();
+            gameOver = true;
+        } else {
+            drawBoard();
+        }
+        p.draw();
+        guideMenu();
+        guideBtn.ariaPressed = "true";
+    }
+}
 
 function sound(element) {
     if (gameOver) {
@@ -331,25 +369,63 @@ function sound(element) {
 
 function makeCover() {
     // tạo lớp mờ
+    if (paused || gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
+        ctx.rect(0, 0, cW, cH);
+        ctx.fill();
+        ctx.font = "30px Verdana";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        // vẽ chữ trên lớp mờ đấy
+        if (gameOver) {
+            ctx.fillText("GAME OVER", cW / 2, cH / 2);
+        } else if (paused) {
+            ctx.fillText("PAUSE", cW / 2, cH / 2);
+        }
+    }
+}
+
+function guideMenu() {
+
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.rect(0, 0, cW, cH);
     ctx.fill();
     ctx.font = "30px Verdana";
     ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    // vẽ chữ trên lớp mờ đấy
-    if (gameOver) {
-        ctx.fillText("GAME OVER", cW / 2, cH / 2);
-        // console.log("Why")
-    } else {
-        ctx.fillText("PAUSE", cW / 2, cH / 2);
-    }
+    ctx.textAlign = "start";
+    // ctx.textAlign = "end";
+    ctx.fillText(`Hướng dẫn`, 20, cH / 10);
+    ctx.font = "20px Verdana";
+    ctx.textAlign = "start";
+    ctx.fillText(`Bấm các phím:`, 20, 100);
+    ctx.fillText(`Trái - Phải để di chuyển`, 20, 130);
+    ctx.fillText(`Lên để xoay`, 20, 160);
+    ctx.fillText(`Xuống để đi nhanh`, 20, 190);
+    ctx.fillText(`Space để đi siêu nhanh`, 20, 220);
 
 
 }
 
+/*
+let gui = document.getElementById("gui");
 
 
+let ctxNow;
+gui.onclick =() => {
+      // here is the most important part because if you dont replace you will get a DOM 18 exception.
+    window.location.href=canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"); // it will save locally
+    if (gui.ariaPressed === "true") {
+        ctx.putImageData(ctxNow, 0,0)
+        gui.ariaPressed = "false";
+    } else {
+        ctxNow = ctx.getImageData(0,0,cW,cH);
+        guideMenu();
+        gui.ariaPressed = "true";
+    }
+
+
+}
+*/
 
 
 

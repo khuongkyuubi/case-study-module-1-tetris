@@ -157,17 +157,6 @@ class Pieces {
     }
 
 
-    moveFollowMouse(index) {
-
-
-        if (!this.collision(1, 0, this.activeTestromino) && index < cols - 3) {
-            this.unDraw();
-            this.x = index;
-            this.draw();
-        }
-
-    }
-
 
     // Xoay hình
     rotate() {
