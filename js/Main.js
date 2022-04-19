@@ -2,7 +2,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let game = document.querySelector(".game");
 
-let cellSize = 30; // 30x30
+let cellSize = 28.5; // 30x30
 let rows = 20;
 let cols = 10;
 const COLOR = "white";
@@ -30,7 +30,6 @@ let pieces = [
 
 // sound track
 
-
 let tetris = new Sounds("./sound/tetris.mp3");
 let lose = new Sounds("./sound/game-over.mp3");
 let clear = new Sounds("./sound/clear.mp3");
@@ -47,7 +46,6 @@ let pauseBtn = document.getElementById("pause");
 let muteBtn = document.getElementById("mute");
 let soundBtn = document.getElementById("sound-on");
 
-
 function drawCell(x, y, color) {
     // Vẽ 2 hình chữ nhật đè lên nhau, 1 hình màu, 1 hình viền
     ctx.fillStyle = color;
@@ -56,9 +54,6 @@ function drawCell(x, y, color) {
     ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
 }
-
-
-
 
 // Tạo mảng 2 chiều chứa gameboard có kích thước rows x cols
 // gán màu mặc định (white) cho từng ô
@@ -69,7 +64,7 @@ let p = {};
 function newGame() {
     for (let i = 0; i < rows; i++) {
         if (!board[i]) {
-            board[i] = new Array(cols);// nếu tồn tại các mảng con của board rồi thì bỏ qua, ng
+            board[i] = new Array(cols);// nếu tồn tại các mảng con của board rồi thì bỏ qua
         }
         for (let j = 0; j < cols; j++) {
             board[i][j] = COLOR;
@@ -78,6 +73,7 @@ function newGame() {
     p = randomPiece();
     score = 0;
     document.getElementById("score").innerText = score;
+    addControl();
 }
 
 newGame();
@@ -90,7 +86,6 @@ function drawBoard() {
         }
     }
 }
-
 drawBoard();
 
 
@@ -196,13 +191,9 @@ function mouseControl(evt) {
             break;
 
     }
-
 }
 
-
-
-addControl();
-
+// addControl();
 function addControl() {
     window.addEventListener("keydown", gameControl);
     window.addEventListener("keyup", gameControl);
@@ -210,8 +201,6 @@ function addControl() {
     canvas.addEventListener("mousemove", mouseControl);
     canvas.addEventListener("click", mouseControl);
     canvas.addEventListener("contextmenu", mouseControl);
-
-
 }
 
 
@@ -242,8 +231,8 @@ function checkGameOver() {
 
 playBtn.onclick = () => {
     // p.unDraw();
-    drawBoard();
-    p.draw();
+    drawBoard(); // vẽ lại board game
+    p.draw(); // vẽ lại hình game
     addControl();
     if (playBtn.innerText !== "Play") {
         playBtn.innerText = "Play";
