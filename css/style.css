@@ -38,6 +38,7 @@ h1 {
 .score {
     display: inline-block;
     color: coral;
+    cursor: pointer;
 }
 
 .button {

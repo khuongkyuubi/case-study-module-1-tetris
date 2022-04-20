@@ -32,6 +32,24 @@ let pieces = [
 let board = new Array(rows);
 let p = {};
 
+let maxScore;
+
+function checkMaxScore() {
+    if (localStorage.getItem("maxScore")) {
+        maxScore = localStorage.getItem("maxScore");
+    } else {
+        maxScore = 0;
+        localStorage.setItem("maxScore", `${maxScore}`);
+    }
+    document.getElementById("max-score").innerText = maxScore;
+}
+
+function resetMaxScore() {
+    localStorage.removeItem("maxScore");
+    checkMaxScore();
+}
+
+
 // Sound tracks
 let tetris = new Sounds("./sound/tetris.mp3");
 let lose = new Sounds("./sound/game-over.mp3");
@@ -72,6 +90,7 @@ function newGame() {
     score = 0;
     document.getElementById("score").innerText = score;
     addControl();
+    checkMaxScore();
 }
 
 newGame();
@@ -107,7 +126,6 @@ function drop() {
         }
 
     }, 500);
-
 }
 
 // Bắt sự kiện điều khiển bằng bàn phím
@@ -365,5 +383,6 @@ function guideMenu() {
     ctx.fillText(`Xuống để đi nhanh`, 20, 190);
     ctx.fillText(`Space để đi siêu nhanh`, 20, 220);
 }
+
 
 

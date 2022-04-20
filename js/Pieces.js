@@ -182,6 +182,11 @@ class Pieces {
         setTimeout(() => {
             drawBoard();
         }, 100);
+        if (maxScore < score) {
+            maxScore = score;
+            localStorage.setItem("maxScore", `${maxScore}`);
+        }
         document.getElementById("score").innerText = score;
+        checkMaxScore();
     }
 }
