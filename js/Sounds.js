@@ -10,14 +10,14 @@ class Sounds {
         this.sound.muted = false;
     }
 
-    play(){
+    play() {
         if (!mute) {
             this.sound.play();
         }
     }
 
-    stop(){
-        if(!mute){
+    stop() {
+        if (!mute) {
             this.sound.pause();
         }
     }
