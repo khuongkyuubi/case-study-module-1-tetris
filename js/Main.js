@@ -35,13 +35,17 @@ let p = {};
 let maxScore;
 
 function checkMaxScore() {
-    if (localStorage.getItem("maxScore")) {
-        maxScore = localStorage.getItem("maxScore");
+    if (typeof (Storage) !== "undefined") {
+        if (localStorage.getItem("maxScore")) {
+            maxScore = localStorage.getItem("maxScore");
+        } else {
+            maxScore = 0;
+            localStorage.setItem("maxScore", `${maxScore}`);
+        }
+        document.getElementById("max-score").innerText = maxScore;
     } else {
-        maxScore = 0;
-        localStorage.setItem("maxScore", `${maxScore}`);
+        document.getElementsByClassName("score")[1].hidden = true;
     }
-    document.getElementById("max-score").innerText = maxScore;
 }
 
 function resetMaxScore() {
